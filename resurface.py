@@ -1,3 +1,26 @@
+"""
+Title: Resurfacing Engine
+Filename: resurface.py
+Created: 2025-12-30
+Last Updated: 2025-12-30
+
+Description:
+    Combats "digital hoarding" by algorithmically surfacing forgotten notes. It identifies "Orphans" (notes 
+    isolate from the graph) and "Dusty Notes" (active notes identifying as valid but untouched for >90 days).
+    Generates a dashboard for weekly review.
+
+Key Features:
+    - **Orphan Detection**: graph analysis to find notes with in-degree 0.
+    - **Dusty Note Detection**: Time-delta analysis on file modification times.
+    - **Smart Exclusion**: Ignores templates, scripts, archiving tags, and trash.
+    - **Dashboard Generation**: Outputs a Markdown report to `_dashboards/resurfacing.md`.
+
+Usage:
+    python3 resurface.py
+
+Dependencies:
+    - config.py
+"""
 import os
 import re
 import random

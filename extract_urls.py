@@ -1,3 +1,25 @@
+"""
+Title: URL Extractor
+Filename: extract_urls.py
+Created: 2025-12-17
+Last Updated: 2025-12-30
+
+Description:
+    A stream-processing utility that harvests URLs from daily notes. It uses a memory-efficient 
+    line-by-line reading approach to handle large markdown files without performance hits.
+    The primary purpose is to feed the 'Fetch' mode of the News Agent.
+
+Key Features:
+    - **Pattern Matching**: Regex-based extraction of http/https links.
+    - **Memory Efficient**: Uses generator patterns to process files without loading them entirely into RAM.
+    - **Aggregation**: Appends unique URLs to a central `_aggregated-urls.md` list.
+
+Usage:
+    python3 extract_urls.py
+
+Dependencies:
+    - config.py
+"""
 import os
 import re
 import logging

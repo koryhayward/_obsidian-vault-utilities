@@ -1,0 +1,69 @@
+# Obsidian Vault Utilities
+
+**Last Updated**: 2025-12-30
+**Location**: `_obsidian-vault-utilities` (Note: This is the root of the Git repository, independent of the parent Vault).
+
+This directory contains a suite of Python automation scripts designed to enhance the Obsidian experience through intelligence, maintenance, and structure.
+
+---
+
+## ⚙️ Core Configuration
+
+### `config.py`
+**Intent**: Acts as the central nervous system for all other scripts. It defines absolute paths for your vault directories and handles environment variables (like `OPENAI_API_KEY`).
+**Usage**: Imported by other scripts. Edit this file to change directory structures or key file locations.
+
+---
+
+## 🤖 Intelligence Agents
+
+### `news_agent.py`
+**Intent**: A robust content fetcher and AI summarizer. It turns URLs into structured, high-value markdown notes.
+- **Modes**:
+    - `fetch`: Downloads content from `_notes/_aggregated-urls.md`, removing limits on text length.
+    - `digest`: Compiles daily readings into a "Daily Intelligence Brief".
+    - `review`: Synthesizes weekly notes into a "Strategic Horizon" review.
+**Usage**: `python3 news_agent.py --mode fetch`
+
+### `auto_tagger.py`
+**Intent**: Uses OpenAI to audit recent notes and suggest relevant tags, keeping your graph interconnected without manual friction.
+**Usage**: `python3 auto_tagger.py` (Outputs to `_dashboards/auto_tagger_suggestions.md`)
+**Requirements**: `OPENAI_API_KEY`.
+
+---
+
+## 🧹 Maintenance & Structure
+
+### `resurface.py`
+**Intent**: Combats "digital hoarder" syndrome by identifying:
+- **Orphans**: Notes with zero incoming links.
+- **Dusty Notes**: Active notes untouched for >90 days.
+**Usage**: `python3 resurface.py` (Outputs to `_dashboards/resurfacing.md`)
+
+### `map_vault.py`
+**Intent**: Visualizes your vault's physical structure. Generates an ASCII tree view with file counts and sizes to help you spot bloat.
+**Usage**: `python3 map_vault.py` (Outputs to `_artifacts/vault_structure.md`)
+
+### `extract_urls.py`
+**Intent**: Scans your Daily Notes for URLs, extracting them line-by-line (memory efficient) into a master processing queue.
+**Usage**: `python3 extract_urls.py`
+
+---
+
+## 🏭 Generators
+
+### `linkedin_individual.py`
+**Intent**: Converts a CSV export of LinkedIn connections into individual "Person" nodes in your vault.
+**Feature**: Automatically sorts files into alphabetical subdirectories (`A-Z`) to prevent folder overload.
+**Usage**: Place CSV in `_artifacts`, check `config.py`, and run.
+
+### `migrate_individuals.py`
+**Intent**: A one-time migration utility used to restructure the `_individuals` folder from a flat list into A-Z subdirectories.
+**Usage**: Run once found in `_individuals`. 
+
+---
+
+## 🛠️ Setup & Requirements
+- **Python 3.10+**
+- **Dependencies**: `openai`, `requests`, `beautifulsoup4`, `newspaper3k`, `pypdf`, `python-frontmatter`
+- **Environment**: Set `OPENAI_API_KEY` for AI features.

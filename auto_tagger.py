@@ -1,3 +1,27 @@
+"""
+Title: Auto-Tagger Intelligence
+Filename: auto_tagger.py
+Created: 2025-12-30
+Last Updated: 2025-12-30
+
+Description:
+    An AI-driven librarian that scans recently modified notes for missing tags. It uses OpenAI's GPT-4o-mini
+    to analyze note content and suggest relevant, kebab-cased hashtags to improve graph connectivity.
+    
+Key Features:
+    - **Recent Note Scan**: Focuses only on active working notes (default last 7 days).
+    - **Heuristic Filtering**: Skips notes that already appear to have frontmatter or inline tags.
+    - **AI Suggestions**: Returns 3-5 taxonomically relevant tags per note.
+    - **Dashboard Output**: Saves suggestions to `_dashboards/auto_tagger_suggestions.md`.
+
+Usage:
+    python3 auto_tagger.py
+
+Dependencies:
+    - openai
+    - config.py
+    - Environment Variable: OPENAI_API_KEY
+"""
 import os
 import logging
 from datetime import datetime

@@ -1,3 +1,26 @@
+"""
+Title: Vault Structure Mapper
+Filename: map_vault.py
+Created: 2025-12-30
+Last Updated: 2025-12-30
+
+Description:
+    Visualizes the physical storage structure of the Obsidian vault. It generates an ASCII tree diagram
+    annotated with file counts and directory sizes (in MB). This helps identify bloat and structural imbalances
+    that aren't visible in the Obsidian graph view.
+
+Key Features:
+    - **ASCII Tree Generation**: Recursive visualization of folders.
+    - **Size & Count Analytics**: Quantifies the "weight" of each valid directory.
+    - **Noise Reduction**: Explicitly excludes .git, .obsidian, and other system folders.
+    - **Artifact Output**: Saves result to `_artifacts/vault_structure.md` to avoid cluttering dashboards.
+
+Usage:
+    python3 map_vault.py
+
+Dependencies:
+    - config.py
+"""
 import os
 import json
 import logging

@@ -1,3 +1,23 @@
+"""
+Title: Configuration Settings
+Filename: config.py
+Created: 2025-12-17
+Last Updated: 2025-12-30
+
+Description:
+    The central source of truth for the vault's file system layout. All other scripts import 
+    this module to ensure consistency in path resolution. It also handles secure retrieval 
+    of environment variables.
+
+Key Features:
+    - **Absolute Path Resolution**: Anchors all paths to `VAULT_ROOT`.
+    - **Directory Constants**: Defines `_dashboards`, `_artifacts`, `_templates`, etc.
+    - **API Key Management**: Checks for `OPENAI_API_KEY`.
+
+Usage:
+    import config
+    print(config.VAULT_ROOT)
+"""
 import os
 import sys
 

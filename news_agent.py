@@ -1,3 +1,31 @@
+"""
+Title: News Agent & Intelligence Summarizer
+Filename: news_agent.py
+Created: 2025-12-17
+Last Updated: 2025-12-30
+Author: Antigravity (Google DeepMind)
+
+Description:
+    A comprehensive intelligence agent designed to ingest specific URLs or PDF documents, extract their full content 
+    (without truncation), and produce high-value executive summaries using OpenAI's GPT models. It operates in three 
+    distinct modes to support a complete information lifecycle: fetching/processing, daily synthesis (Digest), 
+    and weekly strategic review.
+
+Key Features:
+    - **Robust Extraction**: Handles standard HTML articles and complex PDFs (using pypdf).
+    - **AI Personas**: Uses "Intelligence Analyst", "Chief of Staff", and "Strategic Futurist" system prompts.
+    - **No Limits**: Context window raised to 100k tokens; file writing has no character limit.
+    - **Lifecycle Management**: Can aggregate individual notes into Daily Digests and Weekly Reviews.
+
+Usage:
+    python3 news_agent.py --mode fetch   # Process URLs from aggregated list
+    python3 news_agent.py --mode digest  # Create daily digest from today's articles
+    python3 news_agent.py --mode review  # Create weekly strategic review
+
+Dependencies:
+    - openai, requests, newspaper3k, pypdf, python-frontmatter
+    - Environment Variable: OPENAI_API_KEY
+"""
 import os
 import io
 import datetime
