@@ -11,11 +11,15 @@ VAULT_ROOT = os.path.dirname(SCRIPT_DIR)
 # --- DIRECTORY CONSTANTS ---
 NOTES_DIR = os.path.join(VAULT_ROOT, "_notes") 
 ARTIFACTS_DIR = os.path.join(VAULT_ROOT, "_artifacts")
+DASHBOARDS_DIR = os.path.join(VAULT_ROOT, "_dashboards")
+TEMPLATES_DIR = os.path.join(VAULT_ROOT, "_templates")
 LOGS_DIR = os.path.join(ARTIFACTS_DIR, "logs")
 
 # Specific File Paths
 AGGREGATED_FILE = os.path.join(NOTES_DIR, "_aggregated-urls.md")
-ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles") 
+# Note: Conflicting _articles directories found in root and _notes. Using root for now.
+# ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles") 
+ARTICLES_DIR = os.path.join(VAULT_ROOT, "_articles") 
 
 # --- API KEYS ---
 # We retrieve the key here as a string only.
