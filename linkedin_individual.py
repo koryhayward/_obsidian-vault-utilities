@@ -1,3 +1,27 @@
+"""
+Title: LinkedIn Connection Generator
+Filename: linkedin_individual.py
+Created: 2025-12-01
+Last Updated: 2025-12-30
+
+Description:
+    A generator script that transforms a raw CSV export of LinkedIn connections into individual 
+    Markdown Person-Nodes. It applies a "Safe Filename" strategy and organizes outputs into 
+    alphabetical sub-directories to prevent file system throttling.
+
+Key Features:
+    - **CSV Parsing**: Robust reading of standard LinkedIn export format.
+    - **Template Injection**: Uses `_templates/template-individual.md` to format notes.
+    - **Identity Management**: Generates consistent UUIDs and filenames (`Last-First`).
+    - **Structure Enforcement**: Automatically routes files into `_individuals/A`, `_individuals/B`, etc.
+
+Usage:
+    1. Place `linkedin-connections.csv` in `_artifacts/`.
+    2. python3 linkedin_individual.py
+
+Dependencies:
+    - config.py
+"""
 import csv
 import uuid
 import datetime

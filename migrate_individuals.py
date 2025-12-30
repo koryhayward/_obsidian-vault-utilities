@@ -1,3 +1,22 @@
+"""
+Title: Individual Migration Tool
+Filename: migrate_individuals.py
+Created: 2025-12-30
+Last Updated: 2025-12-30
+
+Description:
+    A maintenance utility designed for one-time or periodic execution. It scans the `_individuals` 
+    directory and moves any flat files into their appropriate alphabetical buckets (A-Z). 
+    Useful for cleaning up if files are accidentally dropped in the root.
+
+Key Features:
+    - **Alphabetical Bucketing**: Creates A-Z folders if they don't exist.
+    - **Smart Routing**: Handles files starting with non-alpha characters by grouping them into `#`.
+    - **Safety**: Skips non-markdown files and directories.
+
+Usage:
+    python3 migrate_individuals.py
+"""
 import os
 import shutil
 import logging
