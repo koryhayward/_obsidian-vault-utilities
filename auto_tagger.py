@@ -70,7 +70,7 @@ updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}
 tags: [dashboard, ai, suggestions]
 ---
 
-# 🧠 AI Tag Suggestions
+# AI Tag Suggestions
 > **Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 """

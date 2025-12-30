@@ -98,14 +98,14 @@ updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}
 tags: [dashboard, resurfacing]
 ---
 
-# ⚓ Resurfacing Dashboard
+# Resurfacing Dashboard
 
 > **Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 > **Total Notes**: {len(notes)}
 > **Orphans Found**: {len(orphans)}
 > **Dusty Notes (> {DUSTY_THRESHOLD_DAYS} days)**: {len(dusty_candidates)}
 
-## 🎲 Random Resurfaced Ideas
+## Random Resurfaced Ideas
 *(Notes you haven't touched in a while)*
 
 """
@@ -113,7 +113,7 @@ tags: [dashboard, resurfacing]
         report += f"- [[{name}]] (Last edited: {age} days ago)\n"
 
     report += """
-## 👻 Lonely Orphans
+## Lonely Orphans
 *(Notes with 0 incoming links)*
 
 """
@@ -121,7 +121,7 @@ tags: [dashboard, resurfacing]
         report += f"- [[{name}]]\n"
         
     report += """
-## 📜 Full Orphan List (Top 50)
+## Full Orphan List (Top 50)
 """
     for name in orphans[:50]:
         report += f"- [[{name}]]\n"

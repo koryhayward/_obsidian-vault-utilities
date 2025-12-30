@@ -83,17 +83,17 @@ updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}
 tags: [dashboard, meta]
 ---
 
-# 🗺️ Vault Structure Map
+# Vault Structure Map
 
 > **Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 > **Root**: `{VAULT_ROOT}`
 
-## 📂 Directory Tree
+## Directory Tree
 ```ascii
 {tree_view}
 ```
 
-## 📊 Summary
+## Summary
 *   **Excluded Directories**: {', '.join(EXCLUDE_DIRS)}
 *   *Note: Only listing directories and counts to keep this view clean.*
 """
