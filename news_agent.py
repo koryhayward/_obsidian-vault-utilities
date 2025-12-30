@@ -99,9 +99,56 @@ def fetch_smart_content(url):
 
 def get_ai_summary(text, model="gpt-4o-mini", prompt_type="article"):
     system_prompts = {
-        "article": "Summarize this content. Include title, author/source, key facts, and methodology (if applicable). If it is a legal document/PDF, summarize the ruling or key filings. Format as Markdown.",
-        "digest": "Synthesize these summaries into a 'Daily Intelligence Brief'. Focus on narrative flows and conflicting reports.",
-        "review": "Write a 'Weekly Strategic Review' based on these summaries. Ignore noise; identify macro-trends."
+        "article": """You are a high-level Intelligence Analyst. Your mission is to distill this text into a strategic briefing.
+Target Audience: Executive decision-maker.
+Format: Markdown.
+
+Output Structure:
+1.  **Executive Summary**: 2-3 sentences capturing the core thesis and immediate value.
+2.  **Key Intelligence**: Bullet points of factual assertions, data points, or new developments.
+3.  **Strategic Implications**: Why this matters. Connection to broader trends (tech, politics, economy).
+4.  **Entities & Methodology**: Key people/companies mentioned and how the information was gathered (if stated).
+5.  **Critique/Bias Check**: Brief note on potential author bias or missing perspective.""",
+        "digest": """You are a Chief of Staff preparing a Daily Intelligence Brief (DIB).
+Input: A collection of summarized articles.
+Goal: Synthesize, don't just list. Group stories by theme.
+Format: Markdown.
+
+Structure:
+# Daily Intelligence Brief
+> Date: {{date}}
+
+## Headlines & Critical Alerts
+(Top 1-3 most important items that require immediate attention)
+
+## Thematic Threads
+(Group stories by theme: e.g., 'Artificial Intelligence', 'Geopolitics', 'Market Shifts'. Connect the dots between separate articles.)
+
+## Signal vs. Noise
+(Point out conflicting reports or weak signals worth monitoring)
+
+## Opportunity Radar
+(Actionable insights or new tools mentioned)""",
+        "review": """You are a Strategic Futurist writing a Weekly Review.
+Input: A week's worth of article summaries.
+Goal: Identify macro-trends and shifts in the zeitgeist.
+Format: Markdown.
+
+Structure:
+# Weekly Strategic Horizon
+
+## 1. The Big Picture
+(What was the dominant narrative this week?)
+
+## 2. Emergent Patterns
+*   **Trend A**: description...
+*   **Trend B**: description...
+
+## 3. Outlier Events
+(Events that broke the pattern or signal disruption)
+
+## 4. Forward Outlook
+(Predictions for next week based on current trajectory)"""
     }
     
     try:
@@ -206,7 +253,7 @@ def digest_mode():
     digest = get_ai_summary(summaries, model="gpt-4o", prompt_type="digest")
     
     with open(daily_note_path, 'a') as f:
-        f.write(f"\n\n# 🧠 AI Daily Digest\n{digest}\n")
+        f.write(f"\n\n# AI Daily Digest\n{digest}\n")
     print(f"Digest appended to {daily_note_path}")
 
 def review_mode():
