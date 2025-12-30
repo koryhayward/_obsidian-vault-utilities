@@ -41,12 +41,16 @@ def parse_existing_table(filepath, logger):
     return entries
 
 def extract_urls_from_file(filepath, logger):
+    urls = set()
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            return list(set(url_pattern.findall(f.read())))
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                found = url_pattern.findall(line)
+                if found:
+                    urls.update(found)
     except Exception as e:
         logger.error(f"Error reading {filepath}: {e}")
-        return []
+    return list(urls)
 
 def main():
     logger = setup_logging()

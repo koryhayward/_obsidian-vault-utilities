@@ -109,7 +109,7 @@ def get_ai_summary(text, model="gpt-4o-mini", prompt_type="article"):
             model=model,
             messages=[
                 {"role": "system", "content": system_prompts[prompt_type]},
-                {"role": "user", "content": text[:25000]} # Increase limit for long PDFs
+                {"role": "user", "content": text[:100000]} # Increase limit for long PDFs
             ]
         )
         return response.choices[0].message.content
@@ -171,7 +171,7 @@ status: read
 {summary}
 
 ## Extracted Text
-{text[:5000]}... [Truncated for Notes]
+{text}
 """
             with open(note_path, 'w') as f:
                 f.write(content)
