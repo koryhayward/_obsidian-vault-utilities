@@ -9,7 +9,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ---
 
-## ⚙️ Core Configuration
+## Core Configuration
 
 ### `config.py`
 - **Intent**: Acts as the central nervous system for all other scripts. It defines absolute paths for the vault directories and handles environment variables (like `OPENAI_API_KEY`).
@@ -21,7 +21,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ---
 
-## 🤖 Intelligence Agents
+## Intelligence Agents
 
 ### `news_agent.py`
 - **Intent**: A robust content fetcher and AI summarizer. It turns URLs into structured, high-value markdown notes.
@@ -45,7 +45,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ---
 
-## 🧹 Maintenance & Structure
+## Maintenance & Structure
 
 ### `resurface.py`
 - **Intent**: Combats "digital hoarder" syndrome by identifying:
@@ -74,7 +74,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ---
 
-## 🏭 Generators
+## Generators
 
 ### `linkedin_individual.py`
 - **Intent**: Converts a CSV export of LinkedIn connections into individual "Person" nodes in the vault.
@@ -97,7 +97,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ---
 
-## 🛠️ Setup & Requirements
+## Setup & Requirements
 
 - **Python**: 3.10+
 - **Environment**: Set `OPENAI_API_KEY` for AI features.
