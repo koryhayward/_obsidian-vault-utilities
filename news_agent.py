@@ -140,7 +140,7 @@ Output Structure:
         "digest": """You are a Chief of Staff preparing a Daily Intelligence Brief (DIB).
 Input: A collection of summarized articles.
 Goal: Synthesize, don't just list. Group stories by theme.
-Format: Markdown.
+Format: Markdown. Do NOT use emojis.
 
 Structure:
 # Daily Intelligence Brief
@@ -160,7 +160,7 @@ Structure:
         "review": """You are a Strategic Futurist writing a Weekly Review.
 Input: A week's worth of article summaries.
 Goal: Identify macro-trends and shifts in the zeitgeist.
-Format: Markdown.
+Format: Markdown. Do NOT use emojis.
 
 Structure:
 # Weekly Strategic Horizon
