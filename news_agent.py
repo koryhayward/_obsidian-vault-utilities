@@ -310,17 +310,27 @@ def digest_mode():
     print("--- Daily Digest Mode ---")
     today_str = datetime.date.today().strftime("%Y-%m-%d")
     daily_note_path = os.path.join(config.NOTES_DIR, f"{today_str}.md")
+    print(f"DEBUG: Looking for articles dated {today_str} in {config.ARTICLES_DIR}")
     
     summaries = ""
     if os.path.exists(config.ARTICLES_DIR):
-        for filename in os.listdir(config.ARTICLES_DIR):
+        files = os.listdir(config.ARTICLES_DIR)
+        print(f"DEBUG: Found {len(files)} files.")
+        for filename in files:
             if filename.endswith(".md"):
                 path = os.path.join(config.ARTICLES_DIR, filename)
                 try:
                     post = frontmatter.load(path)
-                    if str(post.get('date')) == today_str:
+                    post_date = str(post.get('date'))
+                    # print(f"DEBUG: Checking {filename} | Date: {post_date}") 
+                    if post_date == today_str:
                         summaries += f"\n\nSource: {post.get('url')}\n{post.content[:2000]}"
-                except: continue
+                        print(f"  -> Included: {filename}")
+                    else:
+                        print(f"  -> Skipped (Date Mismatch): {filename} has {post_date}")
+                except Exception as e:
+                    print(f"SKIPPING SENTINEL: {filename} due to {e}")
+                    continue
 
     if not summaries:
         print("No articles found for today.")
