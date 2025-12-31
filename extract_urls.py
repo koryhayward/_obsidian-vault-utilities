@@ -45,7 +45,8 @@ def setup_logging():
 
 url_pattern = re.compile(r'(https?://[^\s<>")]+)')
 date_file_pattern = re.compile(r'^(\d{4}-\d{2}-\d{2})\.md$')
-table_row_pattern = re.compile(r'^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(\[\[.*?\]\])\s*\|\s*(.*?)\s*\|$')
+# Regex updated to optionally capture a 4th column (Status)
+table_row_pattern = re.compile(r'^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(\[\[.*?\]\])\s*\|\s*(.*?)\s*\|(?:\s*(.*?)\s*\|)?$')
 
 def parse_existing_table(filepath, logger):
     entries = []
@@ -57,7 +58,10 @@ def parse_existing_table(filepath, logger):
             for line in f:
                 match = table_row_pattern.match(line.strip())
                 if match:
-                    entries.append((match.group(1), match.group(2), match.group(3)))
+                    # Tuple: (Date, Source, URL, Status)
+                    # Status defaults to empty string if missing in old rows
+                    status = match.group(4) if match.group(4) else ""
+                    entries.append((match.group(1), match.group(2), match.group(3), status))
     except Exception as e:
         logger.error(f"Error reading master file: {e}")
     return entries
@@ -79,8 +83,10 @@ def main():
     logger.info(f"Scanning directory: {search_dir}")
 
     existing_entries = parse_existing_table(aggregated_file, logger)
-    existing_urls = {entry[2] for entry in existing_entries}
-    new_entries = []
+    # Map URL -> Existing Entry (to preserve status)
+    url_map = {entry[2]: entry for entry in existing_entries}
+    
+    new_count = 0
 
     if os.path.exists(search_dir):
         for root, dirs, files in os.walk(search_dir):
@@ -92,21 +98,24 @@ def main():
                     urls = extract_urls_from_file(filepath, logger)
                     
                     for url in urls:
-                        if url not in existing_urls:
-                            entry = (date, f"[[{date}]]", url)
-                            existing_entries.append(entry)
-                            existing_urls.add(url)
-                            new_entries.append(entry)
+                        if url not in url_map:
+                            # New entry: Date, Source, URL, Empty Status
+                            entry = (date, f"[[{date}]]", url, "")
+                            url_map[url] = entry
+                            new_count += 1
     else:
         logger.error(f"Search directory not found: {search_dir}")
 
-    if new_entries:
-        sorted_entries = sorted(existing_entries, key=lambda x: x[0], reverse=True)
+    # Convert back to list and sort by Date (descending)
+    all_entries = list(url_map.values())
+    sorted_entries = sorted(all_entries, key=lambda x: x[0], reverse=True)
+
+    if new_count > 0 or len(sorted_entries) != len(existing_entries):
         with open(aggregated_file, 'w', encoding='utf-8') as f:
-            f.write("# Aggregated URLs\n\n| Date | Source Note | URL |\n| :--- | :--- | :--- |\n")
-            for date, source, url in sorted_entries:
-                f.write(f"| {date} | {source} | {url} |\n")
-        logger.info(f"Added {len(new_entries)} new URLs.")
+            f.write("# Aggregated URLs\n\n| Date | Source Note | URL | Status |\n| :--- | :--- | :--- | :--- |\n")
+            for date, source, url, status in sorted_entries:
+                f.write(f"| {date} | {source} | {url} | {status} |\n")
+        logger.info(f"Updated aggregated list. Added {new_count} new URLs.")
     else:
         logger.info("No new URLs found.")
 

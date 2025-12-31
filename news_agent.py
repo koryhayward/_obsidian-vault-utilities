@@ -28,6 +28,7 @@ Dependencies:
 """
 import os
 import io
+import re
 import datetime
 import argparse
 import requests
@@ -193,48 +194,78 @@ Structure:
         return None
 
 def fetch_mode():
-    print("--- Fetch Mode (Robust) ---")
+    print("--- Fetch Mode (State-Aware) ---")
     if not os.path.exists(config.AGGREGATED_FILE):
         print("Aggregated file not found.")
         return
 
-    # Read URLs
-    urls_to_process = []
+    # 1. Load All Entries
+    entries = []
+    headers = []
+    # Regex to handle 3 or 4 columns safely
+    row_pattern = re.compile(r'^\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|(?:\s*(.*?)\s*\|)?$')
+    
     with open(config.AGGREGATED_FILE, 'r') as f:
-        for line in f:
-            if "|" in line and "http" in line:
-                parts = [p.strip() for p in line.split("|")]
-                if len(parts) >= 4:
-                    urls_to_process.append(parts[3])
+        lines = f.readlines()
 
-    # Process Limit
-    for url in urls_to_process[:5]: 
+    # Preserve headers
+    data_start_idx = 0
+    for i, line in enumerate(lines):
+        if line.startswith("| :---"):
+            headers.append(line)
+            data_start_idx = i + 1
+            break
+        headers.append(line)
+
+    # Parse Data
+    for line in lines[data_start_idx:]:
+        match = row_pattern.match(line.strip())
+        if match:
+            # (Date, Source, URL, Status)
+            status = match.group(4) if match.group(4) else ""
+            entries.append({
+                'date': match.group(1),
+                'source': match.group(2),
+                'url': match.group(3),
+                'status': status
+            })
+
+    # 2. Filter for Processing
+    # Only process if status is empty or explicitly 'retry'
+    to_process = [e for e in entries if not e['status'] or e['status'] == 'retry']
+    
+    print(f"Found {len(to_process)} pending URLs out of {len(entries)} total.")
+
+    # 3. Process Loop
+    for entry in to_process[:10]: # Batch size limit
+        url = entry['url']
+        print(f"Processing: {url}")
+        
         try:
-            print(f"Processing: {url}")
+            # Check if file exists first to avoid re-fetching
+            # Need to guess the filename or title first? 
+            # Strategy: Fetch -> Clean Title -> Check File -> Save
             
-            # Use new Smart Fetcher
             title, text = fetch_smart_content(url)
             
             if not text or len(text) < 100:
-                print("  -> Content too short or inaccessible.")
-                continue
-
-            # Generate Safe Filename
-            if not title or title == "PDF Document":
-                # Fallback to URL-based name for unnamed PDFs
-                title = url.split("/")[-1].replace(".pdf", "").replace(".html", "")
-            
-            safe_title = clean_filename(title)
-            note_path = os.path.join(config.ARTICLES_DIR, f"{safe_title}.md")
-            
-            if os.path.exists(note_path):
-                print(f"  -> Skipping (Exists): {safe_title}")
-                continue
-
-            summary = get_ai_summary(text, prompt_type="article")
-            if not summary: continue
-
-            content = f"""---
+                print("  -> Content inaccessible.")
+                entry['status'] = "Error: Content too short"
+            else:
+                # Generate Safe Filename
+                if not title or title == "PDF Document":
+                    title = url.split("/")[-1].replace(".pdf", "").replace(".html", "")
+                
+                safe_title = clean_filename(title)[:60]
+                note_path = os.path.join(config.ARTICLES_DIR, f"{safe_title}.md")
+                
+                if os.path.exists(note_path):
+                    print(f"  -> Exists: {safe_title}")
+                    entry['status'] = f"[[{safe_title}]]"
+                else:
+                    summary = get_ai_summary(text, prompt_type="article")
+                    if summary:
+                        content = f"""---
 url: {url}
 date: {datetime.date.today()}
 tags: [article, ai-summary]
@@ -248,12 +279,29 @@ status: read
 ## Extracted Text
 {text}
 """
-            with open(note_path, 'w') as f:
-                f.write(content)
-            print(f"  -> Saved: {safe_title}")
-            
+                        with open(note_path, 'w') as f:
+                            f.write(content)
+                        print(f"  -> Saved: {safe_title}")
+                        entry['status'] = f"[[{safe_title}]]"
+                    else:
+                        entry['status'] = "Error: AI Summary Failed"
+
         except Exception as e:
-            print(f"  -> Failed {url}: {e}")
+            print(f"  -> Failed: {e}")
+            entry['status'] = f"Error: {str(e)[:50]}" # Truncate error
+
+        # 4. Immediate Save (Persistence)
+        # Reconstruct file content
+        new_content = "".join(headers)
+        # Ensure header supports 4 columns if it didn't before
+        if "Status" not in headers[-2]:
+            new_content = "# Aggregated URLs\n\n| Date | Source Note | URL | Status |\n| :--- | :--- | :--- | :--- |\n"
+            
+        for e in entries:
+            new_content += f"| {e['date']} | {e['source']} | {e['url']} | {e['status']} |\n"
+            
+        with open(config.AGGREGATED_FILE, 'w', encoding='utf-8') as f:
+            f.write(new_content)
 
 # ... (Include digest_mode and review_mode from previous script here unchanged) ...
 # For brevity, reusing the existing digest/review logic below

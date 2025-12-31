@@ -37,9 +37,8 @@ LOGS_DIR = os.path.join(ARTIFACTS_DIR, "logs")
 
 # Specific File Paths
 AGGREGATED_FILE = os.path.join(NOTES_DIR, "_aggregated-urls.md")
-# Note: Conflicting _articles directories found in root and _notes. Using root for now.
-# ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles") 
-ARTICLES_DIR = os.path.join(VAULT_ROOT, "_articles") 
+# ARTICLES_DIR = os.path.join(VAULT_ROOT, "_articles") 
+ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles") 
 
 # --- API KEYS ---
 # We retrieve the key here as a string only.
