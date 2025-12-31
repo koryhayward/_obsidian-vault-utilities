@@ -3,7 +3,7 @@ Title: News Agent & Intelligence Summarizer
 Filename: news_agent.py
 Created: 2025-12-17
 Last Updated: 2025-12-30
-Author: Antigravity (Google DeepMind)
+Author: [[hayward-kory]]
 
 Description:
     A comprehensive intelligence agent designed to ingest specific URLs or PDF documents, extract their full content 
