@@ -1,7 +1,7 @@
 # Obsidian Vault Utilities
 
 - **Author**: [[hayward-kory]]
-- **Last Updated**: 2026-01-02
+- **Last Updated**: [[2026-01-02]]
 - **Location**: `_obsidian-vault-utilities`
 > **Note**: This is the root of the Git repository, independent of the parent Vault.
 
