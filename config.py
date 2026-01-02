@@ -40,15 +40,22 @@ AGGREGATED_FILE = os.path.join(NOTES_DIR, "_aggregated-urls.md")
 # ARTICLES_DIR = os.path.join(VAULT_ROOT, "_articles") 
 ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles") 
 
-# --- API KEYS ---
+# --- API KEYS & LLM CONFIGURATION ---
 # We retrieve the key here as a string only.
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# Local LLM Settings (LM Studio)
+USE_LOCAL_LLM = True # Set to False to use OpenAI API
+LLM_BASE_URL = "http://localhost:1234/v1" if USE_LOCAL_LLM else None
+LLM_MODEL = "openai/gpt-oss-20b" if USE_LOCAL_LLM else "gpt-4o-mini"
+LLM_API_KEY = "lm-studio" if USE_LOCAL_LLM else OPENAI_API_KEY
 
 # Create directories if missing
 for d in [LOGS_DIR, ARTICLES_DIR]:
     os.makedirs(d, exist_ok=True)
 
-# Stop script if key is missing (Safety Check)
-if not OPENAI_API_KEY:
-    # Optional: print warning but don't crash if you want other scripts to run
-    print("WARNING: OPENAI_API_KEY not found in environment variables.")
+# Safety Check
+if not USE_LOCAL_LLM and not OPENAI_API_KEY:
+    print("WARNING: OPENAI_API_KEY not found in environment variables. Remote API calls will fail.")
+elif USE_LOCAL_LLM:
+    print(f"INFO: Using Local LLM at {LLM_BASE_URL} with model {LLM_MODEL}")

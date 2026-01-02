@@ -40,11 +40,14 @@ from openai import OpenAI
 import config
 
 # Initialize Client
-if not config.OPENAI_API_KEY:
+if not config.USE_LOCAL_LLM and not config.OPENAI_API_KEY:
     print("ERROR: OpenAI API Key not found. Please export OPENAI_API_KEY.")
     exit(1)
 
-client = OpenAI(api_key=config.OPENAI_API_KEY)
+if config.USE_LOCAL_LLM:
+    client = OpenAI(base_url=config.LLM_BASE_URL, api_key=config.LLM_API_KEY)
+else:
+    client = OpenAI(api_key=config.OPENAI_API_KEY)
 
 # Mimic a real browser to avoid being blocked
 HEADERS = {
@@ -126,7 +129,7 @@ def fetch_smart_content(url):
         print(f"  -> Download failed: {e}")
         return None, None
 
-def get_ai_summary(text, model="gpt-4o-mini", prompt_type="article"):
+def get_ai_summary(text, model=config.LLM_MODEL, prompt_type="article"):
     system_prompts = {
         "article": """You are a high-level Intelligence Analyst. Your mission is to distill this text into a strategic briefing.
 Target Audience: Executive decision-maker.
@@ -248,8 +251,8 @@ def fetch_mode():
             
             title, text = fetch_smart_content(url)
             
-            if not text or len(text) < 100:
-                print("  -> Content inaccessible.")
+            if not text or len(text) < 300:
+                print("  -> Content inaccessible (too short).")
                 entry['status'] = "Error: Content too short"
             else:
                 # Generate Safe Filename
@@ -336,7 +339,7 @@ def digest_mode():
         print("No articles found for today.")
         return
 
-    digest = get_ai_summary(summaries, model="gpt-4o", prompt_type="digest")
+    digest = get_ai_summary(summaries, model=config.LLM_MODEL, prompt_type="digest")
     
     with open(daily_note_path, 'a') as f:
         f.write(f"\n\n# AI Daily Digest\n{digest}\n")
@@ -367,7 +370,7 @@ def review_mode():
         print("No articles found in range.")
         return
 
-    review = get_ai_summary(combined_text, model="gpt-4o", prompt_type="review")
+    review = get_ai_summary(combined_text, model=config.LLM_MODEL, prompt_type="review")
     with open(review_path, 'w') as f:
         f.write(f"# Weekly Review\n{review}")
     print(f"Review created: {review_path}")

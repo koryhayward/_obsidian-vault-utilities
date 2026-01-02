@@ -13,6 +13,9 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ### `config.py`
 - **Intent**: Acts as the central nervous system for all other scripts. It defines absolute paths for the vault directories and handles environment variables (like `OPENAI_API_KEY`).
+- **Features**:
+    - **Local LLM Support**: Can be configured to use a local LLM via LM Studio (default: `openai/gpt-oss-20b`) instead of OpenAI's API.
+    - **Toggle**: Set `USE_LOCAL_LLM = True` in the file to switch modes.
 - **Usage**:
   ```python
   import config
@@ -26,7 +29,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 ### `news_agent.py`
 - **Intent**: A robust content fetcher and AI summarizer. It turns URLs into structured, high-value markdown notes.
 - **Modes**:
-    - `fetch`: Downloads content from `_notes/_aggregated-urls.md`, removing limits on text length.
+    - `fetch`: Downloads content from `_notes/_aggregated-urls.md`, removing limits on text length. Connects to Local LLM if configured.
     - `digest`: Compiles daily readings into a "Daily Intelligence Brief".
     - `review`: Synthesizes weekly notes into a "Strategic Horizon" review.
 - **Usage**:
@@ -36,7 +39,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ### `auto_tagger.py`
 - **Intent**: Uses OpenAI to audit recent notes and suggest relevant tags, keeping the graph interconnected without manual friction.
-- **Requirements**: `OPENAI_API_KEY`.
+- **Requirements**: `OPENAI_API_KEY` (or Local LLM if updated).
 - **Usage**:
   ```bash
   python3 auto_tagger.py
@@ -100,7 +103,11 @@ This directory contains a suite of Python automation scripts designed to enhance
 ## Setup & Requirements
 
 - **Python**: 3.10+
-- **Environment**: Set `OPENAI_API_KEY` for AI features.
+- **Local LLM (Optional but Recommended)**: 
+  - Install [LM Studio](https://lmstudio.ai/).
+  - Load a model (e.g., `openai/gpt-oss-20b`).
+  - Start the Local Server on port `1234`.
+- **Environment**: Set `OPENAI_API_KEY` if *not* using Local LLM.
 - **Dependencies**: 
   - `openai`
   - `requests`
