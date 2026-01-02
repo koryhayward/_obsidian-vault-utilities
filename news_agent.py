@@ -1,8 +1,8 @@
 """
 Title: News Agent & Intelligence Summarizer
 Filename: news_agent.py
-Created: 2025-12-17
-Last Updated: 2025-12-30
+Created: [[2025-12-17]]
+Last Updated: [[2026-01-02]]
 Author: [[hayward-kory]]
 
 Description:
