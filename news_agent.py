@@ -162,25 +162,29 @@ Structure:
 ## Opportunity Radar
 (Actionable insights or new tools mentioned)""",
         "review": """You are a Strategic Futurist writing a Weekly Review.
-Input: A week's worth of article summaries.
-Goal: Identify macro-trends and shifts in the zeitgeist.
+Input: A week's worth of article summaries (with dates and sources).
+Goal: Identify macro-trends, grouped thematically.
 Format: Markdown. Do NOT use emojis.
 
-Structure:
+Output Structure:
 # Weekly Strategic Horizon
 
-## 1. The Big Picture
-(What was the dominant narrative this week?)
+## 1. Executive Synthesis
+(High-level narrative of the week's defining changes)
 
-## 2. Emergent Patterns
-*   **Trend A**: description...
-*   **Trend B**: description...
+## 2. Thematic Analysis
+(Group articles by shared themes. For each theme, provide a synthesis and then a 'Chronology' or 'Key Developments' subsection if multiple days are involved. CITE sources using their titles or IDs.)
+
+### [Theme Name]
+*   **Synthesis**: ...
+*   **Key Developments**:
+    *   [Date] Event description (Source: Title/URL)
 
 ## 3. Outlier Events
-(Events that broke the pattern or signal disruption)
+(Events that broke the pattern)
 
 ## 4. Forward Outlook
-(Predictions for next week based on current trajectory)"""
+(Predictions/Watchlist for next week)"""
     }
     
     try:
@@ -363,7 +367,7 @@ def review_mode():
                     if isinstance(p_date, str):
                         p_date = datetime.datetime.strptime(p_date, "%Y-%m-%d").date()
                     if start_week <= p_date <= today:
-                        combined_text += f"\n\nTitle: {filename}\nSummary: {post.content[:1500]}"
+                        combined_text += f"\n\n--- Article ---\nDate: {p_date}\nSource: {post.get('url')}\nTitle: {filename}\nSummary: {post.content[:2000]}"
                 except: continue
 
     if not combined_text:
@@ -371,6 +375,11 @@ def review_mode():
         return
 
     review = get_ai_summary(combined_text, model=config.LLM_MODEL, prompt_type="review")
+    
+    # Save to _weekly-digest with lowercase name
+    fname = f"weekly-review-{start_week.strftime('%Y%m%d')}-{today.strftime('%Y%m%d')}.md".lower()
+    review_path = os.path.join(config.WEEKLY_DIGEST_DIR, fname)
+    
     with open(review_path, 'w') as f:
         f.write(f"# Weekly Review\n{review}")
     print(f"Review created: {review_path}")

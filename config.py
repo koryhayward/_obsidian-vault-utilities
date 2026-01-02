@@ -37,8 +37,8 @@ LOGS_DIR = os.path.join(ARTIFACTS_DIR, "logs")
 
 # Specific File Paths
 AGGREGATED_FILE = os.path.join(NOTES_DIR, "_aggregated-urls.md")
-# ARTICLES_DIR = os.path.join(VAULT_ROOT, "_articles") 
-ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles") 
+ARTICLES_DIR = os.path.join(NOTES_DIR, "_articles")
+WEEKLY_DIGEST_DIR = os.path.join(NOTES_DIR, "_weekly-digest")
 
 # --- API KEYS & LLM CONFIGURATION ---
 # We retrieve the key here as a string only.
@@ -51,7 +51,7 @@ LLM_MODEL = "openai/gpt-oss-20b" if USE_LOCAL_LLM else "gpt-4o-mini"
 LLM_API_KEY = "lm-studio" if USE_LOCAL_LLM else OPENAI_API_KEY
 
 # Create directories if missing
-for d in [LOGS_DIR, ARTICLES_DIR]:
+for d in [LOGS_DIR, ARTICLES_DIR, WEEKLY_DIGEST_DIR]:
     os.makedirs(d, exist_ok=True)
 
 # Safety Check
