@@ -33,7 +33,7 @@ NOTES_DIR = os.path.join(VAULT_ROOT, "_notes")
 ARTIFACTS_DIR = os.path.join(VAULT_ROOT, "_artifacts")
 DASHBOARDS_DIR = os.path.join(VAULT_ROOT, "_dashboards")
 TEMPLATES_DIR = os.path.join(VAULT_ROOT, "_templates")
-LOGS_DIR = os.path.join(ARTIFACTS_DIR, "logs")
+LOGS_DIR = os.path.join(VAULT_ROOT, "_logs")
 
 # Specific File Paths
 AGGREGATED_FILE = os.path.join(NOTES_DIR, "_aggregated-urls.md")

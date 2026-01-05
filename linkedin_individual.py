@@ -134,7 +134,7 @@ def main():
                         r'^name-first:\s*$': f'name-first: {yaml_quote(first_name)}',
                         r'^name-last:\s*$': f'name-last: {yaml_quote(last_name)}',
                         r'^role:\s*$': f'role: {yaml_quote(role)}',
-                        r'^employers:\s*$': f'employers: {yaml_quote(company)}',
+                        r'^employers:\s*$': f'employers: {yaml_quote("[[" + company + "]]")}',
                         r'^email:\s*$': f'email: {yaml_quote(email)}',
                         r'^linkedin:\s*$': f'linkedin: {yaml_quote(url)}'
                     }
