@@ -143,6 +143,13 @@ This directory contains a suite of Python automation scripts designed to enhance
   python3 maintenance/deep_clean/remove_met_via.py
   ```
 
+### `maintenance/deep_clean/remove_dates.py`
+- **Intent**: Removes `created` and `modified` frontmatter fields from Individual and Organization notes to declutter the graph.
+- **Usage**:
+  ```bash
+  python3 maintenance/deep_clean/remove_dates.py
+  ```
+
 ---
 
 ## Setup & Requirements
