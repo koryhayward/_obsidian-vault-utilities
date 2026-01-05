@@ -98,6 +98,45 @@ This directory contains a suite of Python automation scripts designed to enhance
   ```
   *(Run once found in `_individuals`)*
 
+### `generate_organizations.py`
+- **Intent**: Scans individual notes for employer data and generates/updates organization files in `_organizations`.
+- **Features**: 
+    - **Intelligent Linking**: Wraps organization names in wikilinks.
+    - **Context**: Adds Dataview queries to link employees back to the organization.
+    - **Templating**: Fixes templater placeholders (UUIDs, Dates) at runtime.
+- **Usage**:
+  ```bash
+  python3 generate_organizations.py
+  ```
+
+### `migrate_templates.py`
+- **Intent**: Refactors the vault from using `template: "[[name]]"` frontmatter to `#template/name` tags.
+- **Usage**:
+  ```bash
+  python3 migrate_templates.py
+  ```
+
+### `remove_author.py`
+- **Intent**: Bulk removes the `author: "[[hayward-kory]]"` field from all markdown files to clean up metadata.
+- **Usage**:
+  ```bash
+  python3 remove_author.py
+  ```
+
+### `repair_frontmatter.py`
+- **Intent**: Fixes broken YAML frontmatter (missing newlines before closing `---`) caused by bulk edits.
+- **Usage**:
+  ```bash
+  python3 repair_frontmatter.py
+  ```
+
+### `remove_met_via.py`
+- **Intent**: Removes the specific "Met via" line containing a ghost link to `[[Previous Job]]` from individual notes.
+- **Usage**:
+  ```bash
+  python3 remove_met_via.py
+  ```
+
 ---
 
 ## Setup & Requirements
