@@ -2,7 +2,7 @@
 Title: Vault Structure Mapper
 Filename: map_vault.py
 Created: 2025-12-30
-Last Updated: 2025-12-30
+Last Updated: 2026-01-05
 
 Description:
     Visualizes the physical storage structure of the Obsidian vault. It generates an ASCII tree diagram

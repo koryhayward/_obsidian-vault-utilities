@@ -2,7 +2,7 @@
 Title: URL Extractor
 Filename: extract_urls.py
 Created: 2025-12-17
-Last Updated: 2025-12-30
+Last Updated: 2026-01-05
 
 Description:
     A stream-processing utility that harvests URLs from daily notes. It uses a memory-efficient 

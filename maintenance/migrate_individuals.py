@@ -2,7 +2,7 @@
 Title: Individual Migration Tool
 Filename: migrate_individuals.py
 Created: 2025-12-30
-Last Updated: 2025-12-30
+Last Updated: 2026-01-05
 
 Description:
     A maintenance utility designed for one-time or periodic execution. It scans the `_individuals` 
