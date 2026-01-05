@@ -20,6 +20,12 @@ Usage:
 import os
 import shutil
 import logging
+import os
+import sys
+
+# Adjust path to find config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import config
 
 # --- CONFIGURATION ---

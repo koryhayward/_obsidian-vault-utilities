@@ -37,6 +37,9 @@ from bs4 import BeautifulSoup
 from pypdf import PdfReader  # The new PDF tool
 from newspaper import Article
 from openai import OpenAI
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 
 # Initialize Client

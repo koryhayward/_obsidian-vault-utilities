@@ -24,6 +24,9 @@ import os
 import re
 import logging
 from logging.handlers import RotatingFileHandler
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 
 # --- CONFIGURATION FROM UTILS ---

@@ -79,7 +79,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ## Generators
 
-### `linkedin_individual.py`
+### `generators/linkedin_people.py`
 - **Intent**: Converts a CSV export of LinkedIn connections into individual "Person" nodes in the vault.
 - **Feature**: Automatically sorts files into alphabetical subdirectories (`A-Z`) to prevent folder overload.
 - **Usage**:
@@ -87,18 +87,18 @@ This directory contains a suite of Python automation scripts designed to enhance
   2. Check `config.py`.
   3. Run:
      ```bash
-     python3 linkedin_individual.py
+     python3 generators/linkedin_people.py
      ```
 
-### `migrate_individuals.py`
+### `maintenance/migrate_individuals.py`
 - **Intent**: A one-time migration utility used to restructure the `_individuals` folder from a flat list into A-Z subdirectories.
 - **Usage**:
   ```bash
-  python3 migrate_individuals.py
+  python3 maintenance/migrate_individuals.py
   ```
   *(Run once found in `_individuals`)*
 
-### `generate_organizations.py`
+### `generators/organizations.py`
 - **Intent**: Scans individual notes for employer data and generates/updates organization files in `_organizations`.
 - **Features**: 
     - **Intelligent Linking**: Wraps organization names in wikilinks.
@@ -106,35 +106,35 @@ This directory contains a suite of Python automation scripts designed to enhance
     - **Templating**: Fixes templater placeholders (UUIDs, Dates) at runtime.
 - **Usage**:
   ```bash
-  python3 generate_organizations.py
+  python3 generators/organizations.py
   ```
 
-### `migrate_templates.py`
+### `maintenance/deep_clean/migrate_templates.py`
 - **Intent**: Refactors the vault from using `template: "[[name]]"` frontmatter to `#template/name` tags.
 - **Usage**:
   ```bash
-  python3 migrate_templates.py
+  python3 maintenance/deep_clean/migrate_templates.py
   ```
 
-### `remove_author.py`
+### `maintenance/deep_clean/remove_author.py`
 - **Intent**: Bulk removes the `author: "[[hayward-kory]]"` field from all markdown files to clean up metadata.
 - **Usage**:
   ```bash
-  python3 remove_author.py
+  python3 maintenance/deep_clean/remove_author.py
   ```
 
-### `repair_frontmatter.py`
+### `maintenance/deep_clean/repair_frontmatter.py`
 - **Intent**: Fixes broken YAML frontmatter (missing newlines before closing `---`) caused by bulk edits.
 - **Usage**:
   ```bash
-  python3 repair_frontmatter.py
+  python3 maintenance/deep_clean/repair_frontmatter.py
   ```
 
-### `remove_met_via.py`
+### `maintenance/deep_clean/remove_met_via.py`
 - **Intent**: Removes the specific "Met via" line containing a ghost link to `[[Previous Job]]` from individual notes.
 - **Usage**:
   ```bash
-  python3 remove_met_via.py
+  python3 maintenance/deep_clean/remove_met_via.py
   ```
 
 ---

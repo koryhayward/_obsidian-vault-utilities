@@ -1,34 +1,17 @@
 """
 Title: LinkedIn Connection Generator
-Filename: linkedin_individual.py
-Created: 2025-12-01
-Last Updated: 2025-12-30
-
-Description:
-    A generator script that transforms a raw CSV export of LinkedIn connections into individual 
-    Markdown Person-Nodes. It applies a "Safe Filename" strategy and organizes outputs into 
-    alphabetical sub-directories to prevent file system throttling.
-
-Key Features:
-    - **CSV Parsing**: Robust reading of standard LinkedIn export format.
-    - **Template Injection**: Uses `_templates/template-individual.md` to format notes.
-    - **Identity Management**: Generates consistent UUIDs and filenames (`Last-First`).
-    - **Structure Enforcement**: Automatically routes files into `_individuals/A`, `_individuals/B`, etc.
-
-Usage:
-    1. Place `linkedin-connections.csv` in `_artifacts/`.
-    2. python3 linkedin_individual.py
-
-Dependencies:
-    - config.py
 """
 import csv
 import uuid
 import datetime
 import re
 import os
-import logging
-from logging.handlers import RotatingFileHandler
+import sys
+
+# Adjust path to find vault_modules if running directly
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from vault_modules import logger as v_logger
 import config
 
 # --- CONFIGURATION FROM UTILS ---
@@ -40,19 +23,6 @@ OUTPUT_REL_PATH = '_individuals'
 csv_file = os.path.join(config.ARTIFACTS_DIR, CSV_FILENAME)
 template_file = os.path.join(config.VAULT_ROOT, TEMPLATE_REL_PATH)
 output_dir = os.path.join(config.VAULT_ROOT, OUTPUT_REL_PATH)
-log_file = os.path.join(config.LOGS_DIR, 'linkedin_individual.log')
-
-def setup_logging():
-    logger = logging.getLogger('linkedin_gen')
-    logger.setLevel(logging.INFO)
-    if logger.hasHandlers(): logger.handlers.clear()
-
-    file_handler = RotatingFileHandler(log_file, maxBytes=5*1024*1024, backupCount=3)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
-    logger.addHandler(logging.StreamHandler())
-    return logger
 
 def yaml_quote(text):
     if not text: return ""
@@ -65,7 +35,7 @@ def clean_text(text):
     return str(text).strip()
 
 def main():
-    logger = setup_logging()
+    logger = v_logger.setup_logger('linkedin_gen')
     logger.info(f"Starting Generator (Lite). Vault Root: {config.VAULT_ROOT}")
 
     try:
@@ -81,17 +51,13 @@ def main():
             print(f"Template missing: {template_file}")
             return
 
-        # Load Template
         with open(template_file, 'r', encoding='utf-8') as f:
             template_str = f.read()
 
         processed_count = 0
         
-        # --- CSV PROCESSING ---
         with open(csv_file, 'r', encoding='utf-8', errors='replace') as f:
-            start_pos = f.tell()
-            
-            # Robust skip logic: Skip first 3 lines blindly as per requirement
+            # Robust skip logic: Skip first 3 lines
             for _ in range(3):
                 next(f, None)
                 
@@ -99,11 +65,10 @@ def main():
             
             for i, row in enumerate(reader):
                 try:
-                    # Map CSV keys to Variables
                     first_name = clean_text(row.get('First Name', ''))
                     last_name = clean_text(row.get('Last Name', ''))
                     
-                    if not first_name and not last_name: continue # Skip empty rows
+                    if not first_name and not last_name: continue
 
                     # Filename Generation
                     safe_last = "".join([c for c in last_name if c.isalnum() or c in (' ', '-', '_')]).strip()
@@ -118,14 +83,12 @@ def main():
                     email = clean_text(row.get('Email Address', ''))
                     url = clean_text(row.get('URL', ''))
                     
-                    # Template Logic
                     content = template_str
                     content = content.replace('<% tp.user.generate_uuid() %>', str(uuid.uuid4()))
                     today = datetime.date.today().strftime("%Y-%m-%d")
                     content = content.replace('<% tp.file.creation_date("YYYY-MM-DD") %>', today)
                     content = content.replace('<% tp.file.last_modified_date("YYYY-MM-DD") %>', today)
                     
-                    # Regex Replacements
                     content = re.sub(r'identity: "\[\[<%[\s\S]*?%>\]\]"', f'identity: "[[{identity_name}]]"', content)
                     content = re.sub(r'# <%[\s\S]*?individualName[\s\S]*?%>', f'# {identity_name}', content)
                     
@@ -142,8 +105,6 @@ def main():
                     for pattern, replacement in replacements.items():
                         content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
 
-                    # Write
-                    # Determine Subdirectory
                     first_char = identity_name[0].upper()
                     if not first_char.isalpha():
                         first_char = '#'
