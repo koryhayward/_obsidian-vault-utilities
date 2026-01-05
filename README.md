@@ -75,6 +75,13 @@ This directory contains a suite of Python automation scripts designed to enhance
   python3 extract_urls.py
   ```
 
+### `scrub_urls.py`
+- **Intent**: Cleans daily notes by removing URLs that have already been aggregated into `_aggregated-urls.md`. Supports `latest` or `all` scope to reduce clutter.
+- **Usage**:
+  ```bash
+  python3 maintenance/scrub_urls.py --scope latest
+  ```
+
 ---
 
 ## Generators
