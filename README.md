@@ -25,7 +25,7 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ## Intelligence Agents
 
-### `news_agent.py`
+### `summarizer.py`
 - **Intent**: A robust content fetcher and AI summarizer. It turns URLs into structured, high-value markdown notes.
 - **Modes**:
     - `fetch`: Downloads content from `_notes/_aggregated-urls.md`, removing limits on text length. Connects to Local LLM if configured.
@@ -33,7 +33,7 @@ This directory contains a suite of Python automation scripts designed to enhance
     - `review`: Synthesizes weekly notes into a "Strategic Horizon" review.
 - **Usage**:
   ```bash
-  python3 news_agent.py --mode fetch
+  python3 agents/summarizer.py --mode fetch
   ```
 
 ### `auto_tagger.py`

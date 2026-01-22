@@ -1,6 +1,6 @@
 """
-Title: News Agent & Intelligence Summarizer
-Filename: news_agent.py
+Title: Summarizer Agent & Intelligence Summarizer
+Filename: summarizer.py
 Created: [[2025-12-17]]
 Last Updated: [[2026-01-02]]
 Author: [[hayward-kory]]
@@ -18,9 +18,9 @@ Key Features:
     - **Lifecycle Management**: Can aggregate individual notes into Daily Digests and Weekly Reviews.
 
 Usage:
-    python3 news_agent.py --mode fetch   # Process URLs from aggregated list
-    python3 news_agent.py --mode digest  # Create daily digest from today's articles
-    python3 news_agent.py --mode review  # Create weekly strategic review
+    python3 summarizer.py --mode fetch   # Process URLs from aggregated list
+    python3 summarizer.py --mode digest  # Create daily digest from today's articles
+    python3 summarizer.py --mode review  # Create weekly strategic review
 
 Dependencies:
     - openai, requests, newspaper3k, pypdf, python-frontmatter
@@ -203,8 +203,26 @@ Output Structure:
         print(f"OpenAI API Error: {e}")
         return None
 
-def fetch_mode():
+def fetch_mode(output_dir=None):
     print("--- Fetch Mode (State-Aware) ---")
+    
+    # Determine Output Directory
+    if output_dir:
+        # Resolve relative to Vault Root
+        target_dir = os.path.join(config.VAULT_ROOT, output_dir)
+        print(f"Custom Output Directory: {target_dir}")
+    else:
+        target_dir = config.ARTICLES_DIR
+        
+    # Ensure directory exists
+    if not os.path.exists(target_dir):
+        try:
+            os.makedirs(target_dir, exist_ok=True)
+            print(f"Created directory: {target_dir}")
+        except Exception as e:
+            print(f"Error creating directory {target_dir}: {e}")
+            return
+
     if not os.path.exists(config.AGGREGATED_FILE):
         print("Aggregated file not found.")
         return
@@ -212,8 +230,8 @@ def fetch_mode():
     # 1. Load All Entries
     entries = []
     headers = []
-    # Regex to handle 3 or 4 columns safely
-    row_pattern = re.compile(r'^\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|(?:\s*(.*?)\s*\|)?$')
+    # Regex to handle 3, 4, or 5 columns safely
+    row_pattern = re.compile(r'^\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|(?:\s*(.*?)\s*\|)?(?:\s*(.*?)\s*\|)?$')
     
     with open(config.AGGREGATED_FILE, 'r') as f:
         lines = f.readlines()
@@ -231,13 +249,15 @@ def fetch_mode():
     for line in lines[data_start_idx:]:
         match = row_pattern.match(line.strip())
         if match:
-            # (Date, Source, URL, Status)
+            # (Date, Source, URL, Status, UUID)
             status = match.group(4) if match.group(4) else ""
+            uuid_val = match.group(5) if match.group(5) else ""
             entries.append({
                 'date': match.group(1),
                 'source': match.group(2),
                 'url': match.group(3),
-                'status': status
+                'status': status,
+                'uuid': uuid_val
             })
 
     # 2. Filter for Processing
@@ -267,7 +287,7 @@ def fetch_mode():
                     title = url.split("/")[-1].replace(".pdf", "").replace(".html", "")
                 
                 safe_title = clean_filename(title)[:60]
-                note_path = os.path.join(config.ARTICLES_DIR, f"{safe_title}.md")
+                note_path = os.path.join(target_dir, f"{safe_title}.md")
                 
                 if os.path.exists(note_path):
                     print(f"  -> Exists: {safe_title}")
@@ -291,7 +311,7 @@ status: read
 """
                         with open(note_path, 'w') as f:
                             f.write(content)
-                        print(f"  -> Saved: {safe_title}")
+                        print(f"  -> Saved to {output_dir if output_dir else '_articles'}: {safe_title}")
                         entry['status'] = f"[[{safe_title}]]"
                     else:
                         entry['status'] = "Error: AI Summary Failed"
@@ -303,12 +323,14 @@ status: read
         # 4. Immediate Save (Persistence)
         # Reconstruct file content
         new_content = "".join(headers)
-        # Ensure header supports 4 columns if it didn't before
-        if "Status" not in headers[-2]:
-            new_content = "# Aggregated URLs\n\n| Date | Source Note | URL | Status |\n| :--- | :--- | :--- | :--- |\n"
+        # Ensure header supports 5 columns if it didn't before
+        if "Source UUID" not in headers[-2]:
+            new_content = "# Aggregated URLs\n\n| Date | Source Note | URL | Status | Source UUID |\n| :--- | :--- | :--- | :--- | :--- |\n"
             
         for e in entries:
-            new_content += f"| {e['date']} | {e['source']} | {e['url']} | {e['status']} |\n"
+            # Handle potentially missing uuid key if dict created from old structure (unlikely given loop above but safe)
+            u_val = e.get('uuid', '')
+            new_content += f"| {e['date']} | {e['source']} | {e['url']} | {e['status']} | {u_val} |\n"
             
         with open(config.AGGREGATED_FILE, 'w', encoding='utf-8') as f:
             f.write(new_content)
@@ -390,10 +412,11 @@ def review_mode():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["fetch", "digest", "review"], required=True)
+    parser.add_argument("--output-dir", help="Relative path from Vault Root to save fetched articles (e.g., '_research'). Default: _notes/_articles")
     args = parser.parse_args()
     
     if args.mode == "fetch":
-        fetch_mode()
+        fetch_mode(output_dir=args.output_dir)
     elif args.mode == "digest":
         digest_mode()
     elif args.mode == "review":
