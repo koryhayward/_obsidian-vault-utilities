@@ -33,8 +33,15 @@ This directory contains a suite of Python automation scripts designed to enhance
     - `review`: Synthesizes weekly notes into a "Strategic Horizon" review.
 - **Usage**:
   ```bash
+  # Process URLs from aggregated list (saves to _articles)
   python3 agents/summarizer.py --mode fetch
+
+  # Process and save to a custom directory relative to Vault Root
+  python3 agents/summarizer.py --mode fetch --output-dir _research/ai-papers
   ```
+- **New Features**:
+    - **PDF Support**: Automatically extracts text from PDF links.
+    - **Custom Output**: `--output-dir` allows targeting specific folders for research.
 
 ### `auto_tagger.py`
 - **Intent**: Uses OpenAI to audit recent notes and suggest relevant tags, keeping the graph interconnected without manual friction.
@@ -71,8 +78,15 @@ This directory contains a suite of Python automation scripts designed to enhance
 - **Intent**: Scans Daily Notes for URLs, extracting them line-by-line (memory efficient) into a master processing queue.
 - **Usage**:
   ```bash
+  # Scan all daily notes
   python3 extract_urls.py
+
+  # Scan a specific file
+  python3 extract_urls.py --file path/to/note.md
   ```
+- **New Features**:
+    - **Source UUID**: Tracks the UUID of the source note.
+    - **CLI Target**: Use `--file` to scan a single note instead of the whole folder.
 
 ### `scrub_urls.py`
 - **Intent**: Cleans daily notes by removing URLs that have already been aggregated into `_aggregated-urls.md`. Supports `latest` or `all` scope to reduce clutter.
