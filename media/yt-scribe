@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+# ==============================================================================
+# yt-scribe
+# Purpose: Download YouTube subtitles or transcribe via Whisper.
+# Location: Lives in /_obsidian-vault-utilities/ inside your Vault.
+# Filename Format: Title_YYYYMMDD.txt
+# ==============================================================================
+
+# --- 1. Detect Environment & Set Vault Path ---
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    DEFAULT_VAULT="$HOME/_vault/_artifacts"
+    OS_NAME="macOS"
+elif [[ -n "$TERMUX_VERSION" ]] || [[ "$PREFIX" == *"com.termux"* ]]; then
+    # Termux (Z Fold 7)
+    DEFAULT_VAULT="/data/data/com.termux/files/home/storage/documents/os-kwh-vault/_artifacts"
+    OS_NAME="Termux"
+else
+    # Linux Fallback
+    DEFAULT_VAULT="$HOME/Documents/_artifacts"
+    OS_NAME="Linux"
+fi
+
+# --- 2. Setup Arguments & Date ---
+
+VIDEO_URL="$1"
+CUSTOM_DIR="$2"
+DATE_SUFFIX="_$(date +%Y%m%d)" # Format: _20260118
+
+# Help / Usage
+if [[ -z "$VIDEO_URL" ]]; then
+    echo "Usage: $(basename "$0") <VIDEO_URL> [OUTPUT_FOLDER]"
+    echo ""
+    echo "  <VIDEO_URL>      The full URL of the YouTube video."
+    echo "  [OUTPUT_FOLDER]  (Optional) Override default save path."
+    echo "                   Default: $DEFAULT_VAULT"
+    exit 1
+fi
+
+# Determine Final Output Directory
+TARGET_DIR="${CUSTOM_DIR:-$DEFAULT_VAULT}"
+
+# Ensure Directory Exists
+if [ ! -d "$TARGET_DIR" ]; then
+    echo "[$OS_NAME] Creating artifact directory: $TARGET_DIR"
+    mkdir -p "$TARGET_DIR"
+fi
+
+echo "--- yt-scribe ($OS_NAME) ---"
+echo "Target: $TARGET_DIR"
+echo "Source: $VIDEO_URL"
+
+# --- 3. Execution Logic ---
+
+# Enter target dir to ensure files save there
+cd "$TARGET_DIR" || exit
+
+echo "Attempting to fetch official subtitles..."
+
+# Try downloading existing subs (Fastest)
+# Output template postpends the date: Title_YYYYMMDD.srt
+yt-dlp --skip-download --write-sub --write-auto-sub --sub-lang en --convert-subs srt --output "%(title)s${DATE_SUFFIX}.%(ext)s" "$VIDEO_URL"
+
+# Check if successful (look for .srt file created in last 10s)
+LATEST_SRT=$(find . -maxdepth 1 -name "*${DATE_SUFFIX}.srt" -newermt "-10 seconds" | head -n 1)
+
+if [[ -n "$LATEST_SRT" ]]; then
+    echo "✅ Success! Transcript saved: $LATEST_SRT"
+    exit 0
+fi
+
+echo "⚠️  No subtitles found. Switching to Whisper AI..."
+
+# Fallback: Download Audio & Transcribe (Slower, Higher Quality)
+# We name the audio file with the Date Suffix so Whisper inherits it
+echo "   Downloading audio..."
+yt-dlp -x --audio-format mp3 -o "%(title)s${DATE_SUFFIX}.%(ext)s" "$VIDEO_URL"
+
+# Find the audio file we just downloaded (most recent mp3)
+AUDIO_FILE=$(find . -maxdepth 1 -name "*${DATE_SUFFIX}.mp3" -newermt "-60 seconds" | head -n 1)
+
+if [[ -f "$AUDIO_FILE" ]]; then
+    echo "   Transcribing with Whisper (Base Model)..."
+    
+    # Run Whisper
+    # Whisper will output a file with the same name as audio, but .txt extension
+    whisper "$AUDIO_FILE" --model base --output_format txt --output_dir "$TARGET_DIR"
+    
+    # Cleanup Audio
+    rm "$AUDIO_FILE"
+    echo "✅ Transcription Complete."
+else
+    echo "❌ Error: Could not download audio."
+    exit 1
+fi
