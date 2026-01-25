@@ -8,6 +8,17 @@ This directory contains a suite of Python automation scripts designed to enhance
 
 ---
 
+## Automation Core
+
+### `automation/run_pipeline.sh`
+- **Intent**: The master orchestration script. It activates the virtual environment and executes the full Intelligence Pipeline in sequence: Extraction -> Summarization -> Scrubbing.
+- **Usage**:
+  ```bash
+  ./automation/run_pipeline.sh
+  ```
+
+---
+
 ## Core Configuration
 
 ### `config.py`
@@ -94,7 +105,21 @@ This directory contains a suite of Python automation scripts designed to enhance
   ```bash
   python3 maintenance/scrub_urls.py --scope latest
   ```
+  python3 maintenance/scrub_urls.py --scope latest
+  ```
 
+---
+
+## Media Tools
+
+### `media/yt-scribe`
+- **Intent**: Downloads YouTube subtitles or transcribes audio using OpenAI Whisper.
+- **Usage**:
+  ```bash
+  ./media/yt-scribe <VIDEO_URL> [OUTPUT_DIR]
+  ```
+
+---
 ---
 
 ## Generators
